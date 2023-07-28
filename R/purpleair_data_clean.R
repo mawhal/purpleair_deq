@@ -26,3 +26,14 @@ write_csv(df, "output/purpleair_clean.csv")
 ### visualize
 ggplot(df, aes(x = time_stamp, y = temperature, col = id)) +
   geom_line()
+
+ggplot(df, aes(x = time_stamp, y = pm10.0_cf_1, col = id)) +
+  geom_line(alpha = 0.5) + 
+  geom_point(size = 0.5)
+
+
+
+
+# investigate timing
+df$time_stamp[1:5]
+# every ten minutes
