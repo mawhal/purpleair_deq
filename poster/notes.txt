@@ -1,0 +1,9 @@
+When we talked about how well PurpleAir monitors work relative to DEQ, we need to think about both accuracy and precision. 
+
+Accuracy, if we assume DEQ is "correct", would be how far we are from the 1:1 line on the correlation plot. We can measure this with the slope and intercept of the relationship. We have a slope of 1.3 and an intercept of about 2. This means that we tend to overestimate at any value (intercept), and we tend to overestimate more as the estimate increases (slope).
+
+Regarding precision, we need to think about the variation around the relationship on the correlation plot. The variation looks pretty substantial to me.
+
+How often are we wrong regarding health warning using Purple Air (overestimating)? Is it worse to over or underestimate from a human health perspective? Maybe we can use 100ug/m3 (micrograms per cubic meter) as an arbitrary threshold.
+
+We should repeat the code for PM25, which is actually pm2.5. Currently, we just have PM10
