@@ -64,12 +64,12 @@ lm.deq.purple <- lm(pm10purp ~ pm10deq, data = dcomplete)
 xylim <- range( c(dcomplete$pm10deq, dcomplete$pm10purp), na.rm = T )
 svg("output/correlation_deq_purplemean.svg", width = 3, height = 3)
 par(mar = c(5,4,2,2)+0.1, pty = "s", las = 1  )
-plot(dcomplete$pm10deqlog, dcomplete$pm10purplog, 
-     # cex = 0.5, xlim = c(0,xylim[2]), ylim = c(0,xylim[2]),
+plot(dcomplete$pm10deq, dcomplete$pm10purp, 
+     cex = 0.5, xlim = c(0,xylim[2]), ylim = c(0,xylim[2]),
      xlab = expression(paste("PM10 DEQ (", mu, "g/",m^3,")")),
      ylab = expression(paste("PM10 PurpleAir (", mu, "g/",m^3,")")),
      type = "n" )
-points( dcomplete$pm10deqlog, dcomplete$pm10purplog, col = "slateblue")
+points( dcomplete$pm10deq, dcomplete$pm10purp, col = "slateblue")
 abline(a = 0, b = 1, col = 'red')
 abline(lm.deq.purple)
 text( x = 50, y = 140,
@@ -90,8 +90,8 @@ svg("output/correlation_deq_purplemean_log.svg", width = 3, height = 3)
 par(mar = c(5,4,2,2)+0.1, pty = "s", las = 1  )
 plot(dcomplete$pm10deqlog, dcomplete$pm10purplog, 
      cex = 0.5, xlim = xylim, ylim = xylim,
-     xlab = expression(paste("PM10 DEQ (", mu, "g/",m^3,")")),
-     ylab = expression(paste("PM10 PurpleAir (", mu, "g/",m^3,")")),
+     xlab = expression(paste("ln(PM10 DEQ (", mu, "g/",m^3,"))")),
+     ylab = expression(paste("ln(PM10 PurpleAir (", mu, "g/",m^3,"))")),
      type = "n" )
 points( dcomplete$pm10deqlog, dcomplete$pm10purplog, col = "slateblue")
 abline(a = 0, b = 1, col = 'red')
