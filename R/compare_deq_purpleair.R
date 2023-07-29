@@ -5,6 +5,7 @@
 
 # load libraries
 library(tidyverse)
+library(psych)
 
 # read the data and rename columns
 deq  <- read_csv("output/deq_data_merge.csv")
@@ -12,10 +13,26 @@ names(deq)  <- c("time","pm10deq","pm25deq","time_stamp")
 # deq$sensor.id = "DEQ"
 deq$pm10deq <- as.numeric(deq$pm10deq)
 deq$pm25deq <- as.numeric(deq$pm25deq)
+unique(date(deq$time_stamp))
 
 purp <- read_csv("output/purpleair_clean.csv")
 names(purp) <- c("time_stamp","humidity","temperature","pm25purp","pm10purp","sensor.id")
 purp$sensor.id <- as.character(purp$sensor.id)
+
+
+# look for correlations among purpleair monitors
+purp.wide <- purp %>% 
+  group_by(time_stamp, sensor.id) %>% 
+  summarize( pm10purp = mean(pm10purp)) %>% 
+  select(time_stamp,sensor.id,pm10purp) %>% 
+  pivot_wider( names_from = sensor.id, values_from = pm10purp )
+
+pairs.panels(purp.wide[2:4])
+# highly correlated
+# take the mean across all sensors and use this for comparison to DEQ
+purp.mean <- purp %>% 
+  group_by(time_stamp) %>% 
+  summarize( pm10purp = mean(pm10purp))
 
 
 ## issue 1
@@ -27,46 +44,34 @@ purp$sensor.id <- as.character(purp$sensor.id)
 
 # option 1
 # let's try to merge the dataset based on time_stamp
-dcombine <- left_join( deq, purp )
-dcombine$sensor.id[ is.na(dcombine$sensor.id) ] <- "DEQ"
+dcombine <- left_join( deq, purp.mean )
 
 
 
 ## plot the correlations
+# remove NA
+dcomplete <- dcombine[ complete.cases(dcombine), ]
+# set x and y limits
+xylim <- range( c(dcomplete$pm10deq, dcomplete$pm10purp), na.rm = T )
+par(mar = c(5,4,2,2)+0.1, pty = "s", las = 1  )
+plot(dcomplete$pm10deq, dcomplete$pm10purp, 
+     cex = 0.5, xlim = c(0,xylim[2]), ylim = c(0,xylim[2]),
+     xlab = expression(paste("PM10 DEQ (", mu, "g/",m^3,")")),
+     ylab = expression(paste("PM10 PurpleAir (", mu, "g/",m^3,")"))  )
+abline(a = 0, b = 1, col = 'red')
+# plot time series together
+par(mar = c(5,5,2,2)+0.1, pty = "m", las = 1  )
+plot( y = dcomplete$pm10deq, x = dcomplete$time_stamp, type = "n", 
+     xlab = "Time",
+     ylab = expression(paste("PM10 (", mu, "g/",m^3,")"))  )
+points(y = dcomplete$pm10purp, x = dcomplete$time_stamp, pch = 16, cex = 0.5,  col = "purple" )
+lines( x = dcomplete$time_stamp, y = dcomplete$pm10deq )
 
 
-# look for correlations among purpleair monitors
-purp.wide <- purp %>% 
-  group_by(time_stamp, sensor.id) %>% 
-  summarize( pm10purp = mean(pm10purp)) %>% 
-  select(time_stamp,sensor.id,pm10purp) %>% 
-  pivot_wider( names_from = sensor.id, values_from = pm10purp )
-library(psych)
-pairs.panels(purp.wide[2:4])
-
-
-### let's graph time series together
-dlong10 <- dcombine %>% 
-  select(time_stamp, pm10deq, pm10purp, sensor.id) %>% 
-  pivot_longer( cols = pm10deq:pm10purp )
-dlong10 <- dlong10[ !is.na(dlong10$value), ]
-
-
-ggplot( data = dlong10, aes(x = time_stamp, y = value, col = sensor.id)) +
-  facet_wrap(~sensor.id) + geom_line( alpha = 0.5)
-
-
-# between DEQ and PurpleAir
-dlong10$method <- ifelse(dlong10$sensor.id == "DEQ", "DEQ", "PurpleAir")
-dlong10.mean <- dlong10 %>% 
-  group_by(time_stamp, method) %>% 
-  summarize( pm10 = mean(value))
-dwide10 <- dlong10.mean %>% 
-  pivot_wider( names_from = method, values_from = pm10)
-plot(dcombine$pm10deq, dcombine$pm10purp )
-abline(a = 0, b = 1)
-plot(dcombine$pm25deq, dcombine$pm25purp )
-abline(a = 0, b = 1)
+# correlation test
+cor.test( dcomplete$pm10deq, dcomplete$pm10purp )
 
 
 
+# detemine which dates are represented
+unique(date(dcomplete$time_stamp))
