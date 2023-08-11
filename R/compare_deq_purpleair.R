@@ -152,20 +152,20 @@ svg("output/correlation_deq_purplemean.svg", width = 3, height = 3)
 par(mar = c(5,4,2,2)+0.1, pty = "s", las = 1  )
 plot(dcomplete$pm25deq, dcomplete$pm25purp, 
      cex = 0.5, xlim = c(0,xylim[2]), ylim = c(0,xylim[2]),
-     xlab = expression(paste("pm25 DEQ (", mu, "g/",m^3,")")),
-     ylab = expression(paste("pm25 PurpleAir (", mu, "g/",m^3,")")),
+     xlab = expression(paste("PM2.5 DEQ (", mu, "g/",m^3,")")),
+     ylab = expression(paste("PM2.5 PurpleAir (", mu, "g/",m^3,")")),
      type = "n" )
 points( dcomplete$pm25deq, dcomplete$pm25purp, col = "slateblue")
 abline(a = 0, b = 1, col = 'red')
 abline(lm.deq.purple)
-text( x = 50, y = 140,
-      labels = paste0("r = ", round(cor.deq.purple$estimate,3)), 
+text( x = 5, y = 110,
+      labels = paste0("r = ", round(cor.deq.purple$estimate,2)), 
       adj = 0, cex = 0.75 )
-text(125,125,labels = "1:1", adj = 0.5, pos = 3, 
+text(105,105,labels = "1:1", adj = 0.5, pos = 3, 
      cex = 0.75, srt = 45, col = "red" )
 dev.off()
 # slope is the Estimate for pm25deq
-summary(lm.deq.purple)$coefficients # slope is ~1.3 and is highly significant
+summary(lm.deq.purple)$coefficients # slope is ~1.6 and is highly significant
 # 
 
 ####
@@ -176,8 +176,8 @@ svg("output/correlation_deq_purplemean_log.svg", width = 3, height = 3)
 par(mar = c(5,4,2,2)+0.1, pty = "s", las = 1  )
 plot(dcomplete$pm25deqlog, dcomplete$pm25purplog, 
      cex = 0.5, xlim = xylim, ylim = xylim,
-     xlab = expression(paste("ln(pm25 DEQ (", mu, "g/",m^3,"))")),
-     ylab = expression(paste("ln(pm25 PurpleAir (", mu, "g/",m^3,"))")),
+     xlab = expression(paste("ln(PM2.5 DEQ (", mu, "g/",m^3,"))")),
+     ylab = expression(paste("ln(PM2.5 PurpleAir (", mu, "g/",m^3,"))")),
      type = "n" )
 points( dcomplete$pm25deqlog, dcomplete$pm25purplog, col = "slateblue")
 abline(a = 0, b = 1, col = 'red')
@@ -192,9 +192,9 @@ dev.off()
 # plot time series together
 svg("output/time_series_deq_purplemean.svg", width = 6, height = 3)
 par(mar = c(5,5,2,2)+0.1, pty = "m", las = 1  )
-plot( y = dcomplete$pm25deq, x = dcomplete$time_stamp, type = "n", 
+plot( y = dcomplete$pm25purp, x = dcomplete$time_stamp, type = "n", 
       xlab = "Time",
-      ylab = expression(paste("pm25 (", mu, "g/",m^3,")"))  )
+      ylab = expression(paste("PM2.5 (", mu, "g/",m^3,")"))  )
 points(y = dcomplete$pm25purp, x = dcomplete$time_stamp, pch = 16, cex = 0.5,  col = "purple" )
 lines( x = dcomplete$time_stamp, y = dcomplete$pm25deq )
 dev.off()
